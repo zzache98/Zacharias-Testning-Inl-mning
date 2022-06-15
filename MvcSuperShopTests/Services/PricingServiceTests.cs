@@ -27,7 +27,7 @@ namespace MvcSuperShopTests.Services
 
             var productList = new List<ProductServiceModel>
             {
-            new ProductServiceModel { BasePrice = 979479 }
+            new ProductServiceModel { BasePrice = 50000 }
             };
 
             var customerContext = new CurrentCustomerContext
@@ -37,7 +37,42 @@ namespace MvcSuperShopTests.Services
 
             var products = sut.CalculatePrices(productList, customerContext);
 
-            Assert.AreEqual(979479, products.First().Price);
+            Assert.AreEqual(50000, products.First().Price);
+        }
+
+        [TestMethod]
+        public void When_agreement_matches_category_return_successful()
+        {
+            var productList = new List<ProductServiceModel>
+            {
+                new ProductServiceModel()
+                {
+                    BasePrice = 50000, CategoryName = "Caddilac", Name = "Karl"
+                }
+            };
+
+            var customerContext = new CurrentCustomerContext
+            {
+                Agreements = new List<Agreement>()
+                {
+                    new Agreement()
+                    {
+                        AgreementRows = new List<AgreementRow>()
+                        {
+                            new AgreementRow()
+                            {
+                                CategoryMatch = "Caddilac",
+                                PercentageDiscount = 6
+                                
+                            }
+                        }
+                    }
+                }
+            };
+
+            var products = sut.CalculatePrices(productList, customerContext);
+
+            Assert.AreEqual(47000, products.First().Price);
         }
     }
 
